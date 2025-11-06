@@ -5,12 +5,15 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
 import warnings
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 warnings.filterwarnings('ignore')
 
 # Настройки страницы
 st.set_page_config(
-    page_title="Анализатор данных - Первичный анализ",
+    page_title="Анализат данных - Первичный анализ",
     page_icon="📈",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -186,11 +189,11 @@ def categorical_analysis(df):
     """Анализ категориальных данных"""
     categorical_cols = df.select_dtypes(include=['object']).columns
     if len(categorical_cols) == 0:
-        st.markdown('<div class="warning-box">Категориальные переменные для анализа отсутствуют</div>',
+        st.markdown('<div class="warning-box">⚠️ Категориальные переменные для анализа отсутствуют</div>',
                     unsafe_allow_html=True)
         return
 
-    st.markdown('<div class="section-header">Анализ категориальных переменных</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">🏷️ Анализ категориальных переменных</div>', unsafe_allow_html=True)
 
     selected_cat_col = st.selectbox(
         "Выберите категориальную переменную для анализа:",
@@ -204,36 +207,55 @@ def categorical_analysis(df):
         col1, col2 = st.columns([2, 1])
 
         with col1:
-            st.write("**Распределение категорий**")
-            fig, ax = plt.subplots(figsize=(10, 6))
-            bars = value_counts.plot(kind='bar', ax=ax, color='#2e86ab')
-            ax.set_title(f'Распределение переменной: {selected_cat_col}')
-            ax.set_ylabel('Количество наблюдений')
-            ax.set_xlabel('Категории')
-            plt.xticks(rotation=45, ha='right')
+            st.write("**📊 Распределение категорий**")
+
+            # Используем Plotly для интерактивной диаграммы
+            fig = px.bar(x=value_counts.index,
+                         y=value_counts.values,
+                         title=f'Распределение переменной: {selected_cat_col}',
+                         labels={'x': 'Категории', 'y': 'Количество наблюдений'},
+                         color=value_counts.values,
+                         color_continuous_scale='Viridis')
+
+            fig.update_layout(
+                height=500,
+                showlegend=False,
+                xaxis_tickangle=-45,
+                template='plotly_white'
+            )
 
             # Добавляем значения на столбцы
-            for i, v in enumerate(value_counts):
-                ax.text(i, v + 0.01 * max(value_counts), str(v),
-                        ha='center', va='bottom', fontsize=9)
+            fig.update_traces(texttemplate='%{y}', textposition='outside')
 
-            ax.grid(True, alpha=0.3)
-            st.pyplot(fig)
+            st.plotly_chart(fig, use_container_width=True)
 
         with col2:
-            st.write("**Статистика распределения**")
+            st.write("**📈 Статистика распределения**")
             freq_table = pd.DataFrame({
                 'Категория': value_counts.index,
                 'Абсолютная частота': value_counts.values,
                 'Относительная частота, %': (value_counts.values / len(df) * 100).round(2)
             })
-            st.dataframe(freq_table, use_container_width=True, height=400)
 
-            # Дополнительная статистика
-            st.write(f"**Общая статистика:**")
-            st.write(f"- Всего категорий: {df[selected_cat_col].nunique()}")
-            st.write(f"- Наиболее частая категория: {value_counts.index[0]}")
-            st.write(f"- Доля наиболее частой категории: {(value_counts.values[0] / len(df) * 100):.1f}%")
+            # Стилизация таблицы частот
+            styled_freq_table = freq_table.style.background_gradient(
+                subset=['Абсолютная частота'],
+                cmap='Blues'
+            )
+
+            st.dataframe(styled_freq_table, use_container_width=True, height=400)
+
+            # Дополнительная статистика в карточках
+            st.markdown("**📊 Общая статистика:**")
+
+            col_a, col_b = st.columns(2)
+            with col_a:
+                st.metric("Всего категорий", f"{df[selected_cat_col].nunique()}")
+            with col_b:
+                st.metric("Наиболее частая", value_counts.index[0])
+
+            st.metric("Доля наиболее частой",
+                      f"{(value_counts.values[0] / len(df) * 100):.1f}%")
 
 
 def missing_values_analysis(df):
