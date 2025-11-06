@@ -13,7 +13,7 @@ warnings.filterwarnings('ignore')
 
 # Настройки страницы
 st.set_page_config(
-    page_title="Анализат данных - Первичный анализ",
+    page_title="Анализ данных - Первичный анализ",
     page_icon="📈",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -68,7 +68,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Заголовок приложения
-st.markdown('<div class="main-header">Анализатор данных</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">Анализ данных</div>', unsafe_allow_html=True)
 st.markdown("### Система первичного анализа и верификации данных")
 
 
