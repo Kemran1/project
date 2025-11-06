@@ -11,7 +11,7 @@ from plotly.subplots import make_subplots
 
 warnings.filterwarnings('ignore')
 
-# Настройки страницы
+
 st.set_page_config(
     page_title="Анализ данных - Первичный анализ",
     page_icon="📈",
@@ -19,7 +19,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Стили CSS для профессионального вида
+
 st.markdown("""
 <style>
     .main-header {
@@ -67,16 +67,16 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Заголовок приложения
+
 st.markdown('<div class="main-header">Анализ данных</div>', unsafe_allow_html=True)
 st.markdown("### Система первичного анализа и верификации данных")
 
 
 def basic_data_info(df):
-    """Базовая информация о данных"""
+
     st.markdown('<div class="section-header">Базовые характеристики данных</div>', unsafe_allow_html=True)
 
-    # Карточки с метриками
+
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
@@ -101,7 +101,7 @@ def basic_data_info(df):
         st.metric("Категориальные данные", f"{categorical_cols:,}", "переменных")
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # Детальная информация о структуре данных
+
     st.subheader("Структура и метаданные")
     info_df = pd.DataFrame({
         'Переменная': df.columns,
@@ -123,10 +123,10 @@ def numeric_analysis(df):
 
     st.markdown('<div class="section-header">Анализ числовых переменных</div>', unsafe_allow_html=True)
 
-    # Описательная статистика
+
     st.subheader("Статистические показатели")
     desc_stats = df[numeric_cols].describe()
-    # Переименовываем для лучшего отображения
+
     desc_stats_ru = desc_stats.rename(index={
         'count': 'Количество',
         'mean': 'Среднее',
@@ -139,7 +139,7 @@ def numeric_analysis(df):
     })
     st.dataframe(desc_stats_ru, use_container_width=True)
 
-    # Визуальный анализ
+
     st.subheader("Визуальный анализ распределений")
 
     selected_cols = st.multiselect(
@@ -150,7 +150,7 @@ def numeric_analysis(df):
     )
 
     if selected_cols:
-        # Гистограммы распределения
+
         if len(selected_cols) <= 4:
             st.write("**Распределение значений**")
             cols = st.columns(len(selected_cols))
@@ -164,7 +164,7 @@ def numeric_analysis(df):
                     ax.grid(True, alpha=0.3)
                     st.pyplot(fig)
 
-        # Анализ выбросов
+
         st.write("**Анализ выбросов**")
         fig, ax = plt.subplots(figsize=(12, 6))
         df[selected_cols].boxplot(ax=ax)
@@ -174,7 +174,7 @@ def numeric_analysis(df):
         ax.grid(True, alpha=0.3)
         st.pyplot(fig)
 
-        # Корреляционный анализ
+
         if len(selected_cols) > 1:
             st.write("**Матрица корреляций**")
             fig, ax = plt.subplots(figsize=(10, 8))
@@ -186,7 +186,7 @@ def numeric_analysis(df):
 
 
 def categorical_analysis(df):
-    """Анализ категориальных данных"""
+
     categorical_cols = df.select_dtypes(include=['object']).columns
     if len(categorical_cols) == 0:
         st.markdown('<div class="warning-box">⚠️ Категориальные переменные для анализа отсутствуют</div>',
@@ -209,7 +209,7 @@ def categorical_analysis(df):
         with col1:
             st.write("**📊 Распределение категорий**")
 
-            # Используем Plotly для интерактивной диаграммы
+
             fig = px.bar(x=value_counts.index,
                          y=value_counts.values,
                          title=f'Распределение переменной: {selected_cat_col}',
@@ -224,7 +224,7 @@ def categorical_analysis(df):
                 template='plotly_white'
             )
 
-            # Добавляем значения на столбцы
+
             fig.update_traces(texttemplate='%{y}', textposition='outside')
 
             st.plotly_chart(fig, use_container_width=True)
@@ -237,7 +237,6 @@ def categorical_analysis(df):
                 'Относительная частота, %': (value_counts.values / len(df) * 100).round(2)
             })
 
-            # Стилизация таблицы частот
             styled_freq_table = freq_table.style.background_gradient(
                 subset=['Абсолютная частота'],
                 cmap='Blues'
@@ -245,7 +244,7 @@ def categorical_analysis(df):
 
             st.dataframe(styled_freq_table, use_container_width=True, height=400)
 
-            # Дополнительная статистика в карточках
+
             st.markdown("**📊 Общая статистика:**")
 
             col_a, col_b = st.columns(2)
@@ -259,7 +258,7 @@ def categorical_analysis(df):
 
 
 def missing_values_analysis(df):
-    """Анализ пропущенных значений"""
+
     missing_total = df.isnull().sum().sum()
     if missing_total == 0:
         st.markdown('<div class="success-box">Пропущенные значения в данных отсутствуют</div>', unsafe_allow_html=True)
@@ -302,29 +301,28 @@ def data_quality_checks(df):
     warnings_list = []
     info_list = []
 
-    # Проверка на полные дубликаты
+
     duplicates = df.duplicated().sum()
     if duplicates > 0:
         warnings_list.append(f"Обнаружено полных дубликатов записей: {duplicates}")
 
-    # Проверка числовых столбцов на бесконечные значения
+
     numeric_cols = df.select_dtypes(include=[np.number]).columns
     for col in numeric_cols:
         if np.isinf(df[col]).sum() > 0:
             warnings_list.append(f"Обнаружены бесконечные значения в переменной: '{col}'")
 
-    # Проверка на постоянные столбцы
+
     for col in df.columns:
         if df[col].nunique() == 1:
             info_list.append(f"Переменная '{col}' содержит постоянное значение")
 
-    # Проверка на столбцы с большим количеством пропусков
+
     for col in df.columns:
         missing_percent = (df[col].isnull().sum() / len(df)) * 100
         if missing_percent > 50:
             warnings_list.append(f"Критический уровень пропусков в переменной '{col}': {missing_percent:.1f}%")
 
-    # Вывод результатов проверки
     if warnings_list:
         st.markdown('<div class="warning-box">', unsafe_allow_html=True)
         st.write("**Требуют внимания:**")
@@ -343,10 +341,10 @@ def data_quality_checks(df):
 
 
 def export_analysis(df):
-    """Экспорт результатов анализа"""
+
     st.markdown('<div class="section-header">Экспорт результатов анализа</div>', unsafe_allow_html=True)
 
-    # Создание комплексного отчета
+
     report = f"""
 ОТЧЕТ ПЕРВИЧНОГО АНАЛИЗА ДАННЫХ
 {'=' * 50}
@@ -370,7 +368,6 @@ def export_analysis(df):
 
     st.text_area("Полный отчет анализа", report, height=400)
 
-    # Инструменты экспорта
     st.write("**Загрузка результатов:**")
     col1, col2, col3 = st.columns(3)
 
@@ -414,7 +411,7 @@ def export_analysis(df):
             )
 
 
-# Основной интерфейс
+
 st.markdown("---")
 uploaded_file = st.file_uploader(
     "Загрузите файл с данными для анализа",
@@ -424,17 +421,15 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file is not None:
     try:
-        # Загрузка данных
+
         if uploaded_file.name.endswith('.csv'):
             df = pd.read_csv(uploaded_file)
         else:
             df = pd.read_excel(uploaded_file)
 
-        # Предпросмотр данных
         st.markdown('<div class="section-header">Предварительный просмотр данных</div>', unsafe_allow_html=True)
         st.dataframe(df.head(10), use_container_width=True)
 
-        # Выполнение комплексного анализа
         basic_data_info(df)
         numeric_analysis(df)
         categorical_analysis(df)
