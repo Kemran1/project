@@ -114,7 +114,7 @@ def basic_data_info(df):
 
 
 def numeric_analysis(df):
-    """Анализ числовых данных"""
+
     numeric_cols = df.select_dtypes(include=[np.number]).columns
     if len(numeric_cols) == 0:
         st.markdown('<div class="warning-box">Числовые переменные для анализа отсутствуют</div>',
@@ -294,7 +294,7 @@ def missing_values_analysis(df):
 
 
 def data_quality_checks(df):
-    """Проверки качества данных"""
+
     st.markdown('<div class="section-header">Диагностика качества данных</div>', unsafe_allow_html=True)
 
     issues = []
@@ -415,8 +415,8 @@ def export_analysis(df):
 st.markdown("---")
 uploaded_file = st.file_uploader(
     "Загрузите файл с данными для анализа",
-    type=['csv', 'xlsx'],
-    help="Поддерживаются файлы формата CSV и Excel (XLSX)"
+    type=['csv', 'xlsx', 'xls'],
+    help="Поддерживаются файлы формата CSV, Excel (XLSX) и старые файлы Excel (XLS)"
 )
 
 if uploaded_file is not None:
@@ -424,8 +424,14 @@ if uploaded_file is not None:
 
         if uploaded_file.name.endswith('.csv'):
             df = pd.read_csv(uploaded_file)
-        else:
+        elif uploaded_file.name.endswith('.xlsx'):
             df = pd.read_excel(uploaded_file)
+        elif uploaded_file.name.endswith('.xls'):
+            df = pd.read_excel(uploaded_file, engine='xlrd')
+        else:
+            st.error("Неподдерживаемый формат файла")
+            st.stop()
+
 
         st.markdown('<div class="section-header">Предварительный просмотр данных</div>', unsafe_allow_html=True)
         st.dataframe(df.head(10), use_container_width=True)
