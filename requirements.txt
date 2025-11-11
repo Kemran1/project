@@ -7,3 +7,4 @@ scipy>=1.10.0
 openpyxl>=3.1.0
 plotly>=6.4.0
 xlrd>=2.0.2
+statsmodels>=1.17.-
