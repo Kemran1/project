@@ -12,14 +12,12 @@ import time
 
 warnings.filterwarnings('ignore')
 
-
 st.set_page_config(
     page_title="Анализ данных - Первичный анализ",
     page_icon="📈",
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
 
 st.markdown("""
 <style>
@@ -130,7 +128,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-
 def create_animated_header():
     st.markdown("""
     <div class="rotating-text">
@@ -144,14 +141,11 @@ def create_animated_header():
     """, unsafe_allow_html=True)
 
 
-
 create_animated_header()
 st.markdown("### Система первичного анализа и верификации данных")
 
 
-
 def basic_data_info(df):
-
     st.markdown('<div class="section-header">Базовые характеристики данных</div>', unsafe_allow_html=True)
 
     col1, col2, col3, col4 = st.columns(4)
@@ -190,7 +184,6 @@ def basic_data_info(df):
 
 
 def numeric_analysis(df):
-
     numeric_cols = df.select_dtypes(include=[np.number]).columns
     if len(numeric_cols) == 0:
         st.markdown('<div class="warning-box">Числовые переменные для анализа отсутствуют</div>',
@@ -258,7 +251,6 @@ def numeric_analysis(df):
 
 
 def categorical_analysis(df):
-
     categorical_cols = df.select_dtypes(include=['object']).columns
     if len(categorical_cols) == 0:
         st.markdown('<div class="warning-box">⚠️ Категориальные переменные для анализа отсутствуют</div>',
@@ -327,7 +319,6 @@ def categorical_analysis(df):
 
 
 def missing_values_analysis(df):
-
     missing_total = df.isnull().sum().sum()
     if missing_total == 0:
         st.markdown('<div class="success-box">Пропущенные значения в данных отсутствуют</div>', unsafe_allow_html=True)
@@ -363,7 +354,6 @@ def missing_values_analysis(df):
 
 
 def data_quality_checks(df):
-
     st.markdown('<div class="section-header">Диагностика качества данных</div>', unsafe_allow_html=True)
 
     issues = []
@@ -405,10 +395,7 @@ def data_quality_checks(df):
                     unsafe_allow_html=True)
 
 
-
-
 def enhanced_numeric_analysis(df):
-
     numeric_cols = df.select_dtypes(include=[np.number]).columns
     if len(numeric_cols) == 0:
         st.markdown('<div class="warning-box">Числовые переменные для анализа отсутствуют</div>',
@@ -416,7 +403,6 @@ def enhanced_numeric_analysis(df):
         return
 
     st.markdown('<div class="section-header">📊 Расширенный анализ числовых переменных</div>', unsafe_allow_html=True)
-
 
     selected_cols = st.multiselect(
         "Выберите переменные для детального анализа:",
@@ -428,7 +414,6 @@ def enhanced_numeric_analysis(df):
     if not selected_cols:
         return
 
-
     tab1, tab2, tab3, tab4 = st.tabs(["📈 Распределения", "📊 Сравнение", "🔄 Корреляции", "📋 Статистика"])
 
     with tab1:
@@ -437,7 +422,6 @@ def enhanced_numeric_analysis(df):
         cols = st.columns(2)
         for i, col in enumerate(selected_cols):
             with cols[i % 2]:
-
                 fig = px.histogram(df, x=col, nbins=30,
                                    title=f'📊 {col} - Распределение',
                                    color_discrete_sequence=['#1f77b4'],
@@ -459,7 +443,6 @@ def enhanced_numeric_analysis(df):
         col1, col2 = st.columns(2)
 
         with col1:
-
             fig_box = px.box(df, y=selected_cols,
                              title='📦 Диаграммы размаха',
                              color_discrete_sequence=['#ff7f0e'])
@@ -467,7 +450,6 @@ def enhanced_numeric_analysis(df):
             st.plotly_chart(fig_box, use_container_width=True)
 
         with col2:
-
             if len(selected_cols) <= 4:
                 fig_violin = px.violin(df, y=selected_cols,
                                        title='🎻 Violin plot (плотность распределения)',
@@ -502,7 +484,6 @@ def enhanced_numeric_analysis(df):
                                                            height=600)
                     st.plotly_chart(fig_scatter_matrix, use_container_width=True)
 
-
         if len(selected_cols) >= 2:
             st.subheader("Диаграмма рассеяния")
             scatter_col1, scatter_col2, scatter_col3 = st.columns(3)
@@ -526,7 +507,6 @@ def enhanced_numeric_analysis(df):
 
         st.subheader("Детальная статистика")
 
-
         desc_stats = df[selected_cols].describe().T
         desc_stats['skewness'] = df[selected_cols].skew()
         desc_stats['kurtosis'] = df[selected_cols].kurtosis()
@@ -548,7 +528,6 @@ def enhanced_numeric_analysis(df):
 
 
 def enhanced_categorical_analysis(df):
-
     categorical_cols = df.select_dtypes(include=['object']).columns
     if len(categorical_cols) == 0:
         st.markdown('<div class="warning-box">⚠️ Категориальные переменные для анализа отсутствуют</div>',
@@ -569,14 +548,12 @@ def enhanced_categorical_analysis(df):
 
     value_counts = df[selected_cat_col].value_counts().head(15)
 
-
     tab1, tab2, tab3 = st.tabs(["📊 Основные графики", "🎯 Детальный анализ", "📈 Сравнение"])
 
     with tab1:
         col1, col2 = st.columns([2, 1])
 
         with col1:
-
             fig_pie = px.pie(values=value_counts.values,
                              names=value_counts.index,
                              title=f'🎯 Распределение: {selected_cat_col}',
@@ -586,7 +563,6 @@ def enhanced_categorical_analysis(df):
             st.plotly_chart(fig_pie, use_container_width=True)
 
         with col2:
-
             fig_bar_h = px.bar(x=value_counts.values,
                                y=value_counts.index,
                                orientation='h',
@@ -608,7 +584,6 @@ def enhanced_categorical_analysis(df):
             fig_treemap.update_layout(height=500)
             st.plotly_chart(fig_treemap, use_container_width=True)
 
-
         if len(value_counts) >= 8:
             fig_sunburst = px.sunburst(names=value_counts.index,
                                        parents=[''] * len(value_counts),
@@ -628,7 +603,6 @@ def enhanced_categorical_analysis(df):
                 col1, col2 = st.columns(2)
 
                 with col1:
-
                     fig_box_cat = px.box(df, x=selected_cat_col, y=compare_with,
                                          title=f'📦 {compare_with} по категориям')
                     fig_box_cat.update_layout(height=500,
@@ -637,7 +611,6 @@ def enhanced_categorical_analysis(df):
                     st.plotly_chart(fig_box_cat, use_container_width=True)
 
                 with col2:
-
                     avg_by_cat = df.groupby(selected_cat_col)[compare_with].mean().sort_values(ascending=False).head(10)
                     fig_bar_avg = px.bar(x=avg_by_cat.index, y=avg_by_cat.values,
                                          title=f'📊 Среднее {compare_with} по категориям',
@@ -650,12 +623,9 @@ def enhanced_categorical_analysis(df):
 
 
 def create_advanced_dashboard(df):
-
     st.markdown('<div class="section-header">🚀 Продвинутая аналитика</div>', unsafe_allow_html=True)
 
-
     st.subheader("📋 Быстрый обзор данных")
-
 
     analysis_type = st.radio(
         "Тип анализа:",
@@ -674,7 +644,6 @@ def create_advanced_dashboard(df):
 
 
 def create_overview_dashboard(df):
-
     col1, col2 = st.columns(2)
 
     with col1:
@@ -713,7 +682,6 @@ def create_trends_dashboard(df):
         with col2:
             y_col = st.selectbox("Ось Y для тренда:", numeric_cols)
 
-
         fig_trend = px.scatter(df, x=x_col, y=y_col,
                                trendline="ols",
                                title=f'📈 Тренд: {x_col} vs {y_col}',
@@ -723,12 +691,10 @@ def create_trends_dashboard(df):
 
 
 def create_anomalies_dashboard(df):
-
     numeric_cols = df.select_dtypes(include=[np.number]).columns
 
     if len(numeric_cols) > 0:
         selected_col = st.selectbox("Выберите переменную для анализа аномалий:", numeric_cols)
-
 
         Q1 = df[selected_col].quantile(0.25)
         Q3 = df[selected_col].quantile(0.75)
@@ -748,7 +714,6 @@ def create_anomalies_dashboard(df):
             st.metric("Доля аномалий", f"{(len(anomalies) / len(df) * 100):.2f}%")
             st.metric("Границы", f"[{lower_bound:.2f}, {upper_bound:.2f}]")
 
-
         fig_anomalies = px.scatter(df, x=df.index, y=selected_col,
                                    title=f'🔍 Обнаружение аномалий в {selected_col}',
                                    color=((df[selected_col] < lower_bound) | (df[selected_col] > upper_bound)),
@@ -758,9 +723,7 @@ def create_anomalies_dashboard(df):
 
 
 def create_summary_dashboard(df):
-
     st.subheader("📋 Ключевые показатели")
-
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -778,17 +741,252 @@ def create_summary_dashboard(df):
         categorical_count = df.select_dtypes(include=['object']).shape[1]
         st.metric("🏷️ Категориальные", f"{categorical_count}")
 
-
     st.subheader("⚡ Быстрая статистика")
     quick_stats = df.describe().T[['mean', 'std', 'min', 'max']].round(2)
     st.dataframe(quick_stats.style.background_gradient(cmap='YlOrBr'),
                  use_container_width=True)
 
+
 def export_analysis(df):
+    st.markdown('<div class="section-header">📊 Визуализированные отчеты и экспорт</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="section-header">Экспорт результатов анализа</div>', unsafe_allow_html=True)
+    tab1, tab2, tab3, tab4 = st.tabs(
+        ["📈 Визуальный отчет", "📋 Статистический отчет", "🔍 Детальный анализ", "📤 Экспорт данных"])
 
-    report = f"""
+    with tab1:
+        st.subheader("📊 Визуальная сводка анализа")
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            total_rows = len(df)
+            st.metric("Всего наблюдений", f"{total_rows:,}")
+
+        with col2:
+            total_cols = len(df.columns)
+            st.metric("Переменные", f"{total_cols:,}")
+
+        with col3:
+            numeric_count = df.select_dtypes(include=[np.number]).shape[1]
+            st.metric("Числовые", f"{numeric_count}")
+
+        with col4:
+            categorical_count = df.select_dtypes(include=['object']).shape[1]
+            st.metric("Категориальные", f"{categorical_count}")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+
+            type_counts = df.dtypes.value_counts()
+            fig_types = px.pie(
+                values=type_counts.values,
+                names=type_counts.index.astype(str),
+                title='Распределение типов данных',
+                color_discrete_sequence=px.colors.qualitative.Set3
+            )
+            fig_types.update_layout(height=400)
+            st.plotly_chart(fig_types, use_container_width=True)
+
+        with col2:
+
+            missing_data = df.isnull().sum()
+            if missing_data.sum() > 0:
+                missing_data = missing_data[missing_data > 0].head(10)
+                fig_missing = px.bar(
+                    x=missing_data.values,
+                    y=missing_data.index,
+                    orientation='h',
+                    title='Топ-10 переменных с пропусками',
+                    color=missing_data.values,
+                    color_continuous_scale='Reds'
+                )
+                fig_missing.update_layout(height=400, showlegend=False)
+                st.plotly_chart(fig_missing, use_container_width=True)
+            else:
+                st.success("✅ Пропущенные значения отсутствуют")
+                st.plotly_chart(px.bar(title="Нет пропущенных значений"), use_container_width=True)
+
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        if len(numeric_cols) > 0:
+            st.subheader("📈 Анализ числовых переменных")
+
+            selected_num_col = st.selectbox("Выберите переменную для анализа:", numeric_cols)
+
+            if selected_num_col:
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    fig_dist = px.histogram(
+                        df, x=selected_num_col,
+                        title=f'Распределение: {selected_num_col}',
+                        marginal='box',
+                        nbins=30
+                    )
+                    fig_dist.update_layout(height=400)
+                    st.plotly_chart(fig_dist, use_container_width=True)
+
+                with col2:
+                    stats_data = df[selected_num_col].describe()
+                    stats_df = pd.DataFrame({
+                        'Метрика': ['Количество', 'Среднее', 'Стд. отклонение', 'Минимум', '25%', 'Медиана', '75%',
+                                    'Максимум'],
+                        'Значение': stats_data.values
+                    })
+                    st.dataframe(stats_df, use_container_width=True, height=400)
+
+        categorical_cols = df.select_dtypes(include=['object']).columns
+        if len(categorical_cols) > 0:
+            st.subheader("🏷️ Анализ категориальных переменных")
+
+            selected_cat_col = st.selectbox("Выберите категориальную переменную:", categorical_cols)
+
+            if selected_cat_col:
+                value_counts = df[selected_cat_col].value_counts().head(10)
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    fig_pie = px.pie(
+                        values=value_counts.values,
+                        names=value_counts.index,
+                        title=f'Распределение: {selected_cat_col}'
+                    )
+                    fig_pie.update_layout(height=400)
+                    st.plotly_chart(fig_pie, use_container_width=True)
+
+                with col2:
+                    fig_bar = px.bar(
+                        x=value_counts.index,
+                        y=value_counts.values,
+                        title='Топ-10 категорий',
+                        color=value_counts.values,
+                        color_continuous_scale='Viridis'
+                    )
+                    fig_bar.update_layout(height=400, xaxis_tickangle=-45)
+                    st.plotly_chart(fig_bar, use_container_width=True)
+
+    with tab2:
+        st.subheader("📋 Детальная статистика")
+
+        st.write("**Общие характеристики данных:**")
+        col1, col2 = st.columns(2)
+
+        with col1:
+            info_data = {
+                'Метрика': ['Объем данных', 'Количество переменных', 'Числовые переменные',
+                            'Категориальные переменные', 'Пропущенные значения', 'Дубликаты'],
+                'Значение': [
+                    f"{len(df):,}",
+                    f"{len(df.columns):,}",
+                    f"{df.select_dtypes(include=[np.number]).shape[1]:,}",
+                    f"{df.select_dtypes(include=['object']).shape[1]:,}",
+                    f"{df.isnull().sum().sum():,}",
+                    f"{df.duplicated().sum():,}"
+                ]
+            }
+            st.dataframe(pd.DataFrame(info_data), use_container_width=True)
+
+        with col2:
+            quality_metrics = {
+                'Метрика': ['Заполненность данных', 'Уникальность записей', 'Качество данных'],
+                'Значение': [
+                    f"{(1 - df.isnull().sum().sum() / (len(df) * len(df.columns))) * 100:.1f}%",
+                    f"{(1 - df.duplicated().sum() / len(df)) * 100:.1f}%",
+                    'Высокое' if df.isnull().sum().sum() == 0 and df.duplicated().sum() == 0 else 'Требует внимания'
+                ]
+            }
+            st.dataframe(pd.DataFrame(quality_metrics), use_container_width=True)
+
+        if len(numeric_cols) > 0:
+            st.subheader("📊 Статистика числовых переменных")
+
+            detailed_stats = df[numeric_cols].describe().T
+            detailed_stats['skewness'] = df[numeric_cols].skew()
+            detailed_stats['kurtosis'] = df[numeric_cols].kurtosis()
+
+            detailed_stats_ru = detailed_stats.rename(columns={
+                'count': 'Количество',
+                'mean': 'Среднее',
+                'std': 'Стд. отклонение',
+                'min': 'Минимум',
+                '25%': '25-й перцентиль',
+                '50%': 'Медиана',
+                '75%': '75-й перцентиль',
+                'max': 'Максимум',
+                'skewness': 'Асимметрия',
+                'kurtosis': 'Эксцесс'
+            })
+
+            st.dataframe(
+                detailed_stats_ru.style.background_gradient(subset=['Среднее', 'Стд. отклонение'], cmap='Blues')
+                .background_gradient(subset=['Асимметрия', 'Эксцесс'], cmap='RdBu_r'),
+                use_container_width=True,
+                height=400
+            )
+
+    with tab3:
+        st.subheader("🔍 Детальный анализ и инсайты")
+
+        st.write("**🔍 Ключевые инсайты:**")
+
+        insights = []
+
+        missing_cols = df.columns[df.isnull().sum() > 0]
+        for col in missing_cols:
+            missing_pct = (df[col].isnull().sum() / len(df)) * 100
+            if missing_pct > 20:
+                insights.append(f"⚠️ Высокий уровень пропусков в '{col}': {missing_pct:.1f}%")
+
+        for col in numeric_cols:
+            skew_val = df[col].skew()
+            if abs(skew_val) > 1:
+                insights.append(f"📊 Сильная асимметрия в '{col}': {skew_val:.2f}")
+
+            Q1 = df[col].quantile(0.25)
+            Q3 = df[col].quantile(0.75)
+            IQR = Q3 - Q1
+            outliers = df[(df[col] < Q1 - 1.5 * IQR) | (df[col] > Q3 + 1.5 * IQR)]
+            if len(outliers) > len(df) * 0.05:
+                insights.append(f"🎯 Много выбросов в '{col}': {len(outliers)} ({len(outliers) / len(df) * 100:.1f}%)")
+
+        for col in categorical_cols:
+            unique_count = df[col].nunique()
+            if unique_count == 1:
+                insights.append(f"📝 Постоянное значение в '{col}'")
+            elif unique_count > 50:
+                insights.append(f"🏷️ Много уникальных значений в '{col}': {unique_count}")
+
+        if insights:
+            for insight in insights:
+                if "⚠️" in insight:
+                    st.error(insight)
+                elif "🎯" in insight or "📊" in insight:
+                    st.warning(insight)
+                else:
+                    st.info(insight)
+        else:
+            st.success("✅ Данные выглядят качественными без критических проблем")
+
+        st.write("**💡 Рекомендации по анализу:**")
+        recommendations = []
+
+        if len(numeric_cols) >= 2:
+            recommendations.append("• Проанализировать корреляции между числовыми переменными")
+
+        if len(categorical_cols) > 0:
+            recommendations.append("• Исследовать взаимосвязи между категориальными и числовыми переменными")
+
+        if missing_cols.any():
+            recommendations.append("• Рассмотреть методы обработки пропущенных значений")
+
+        for rec in recommendations:
+            st.write(rec)
+
+    with tab4:
+        st.subheader("📤 Экспорт результатов")
+
+        report = f"""
 ОТЧЕТ ПЕРВИЧНОГО АНАЛИЗА ДАННЫХ
 {'=' * 50}
 
@@ -807,52 +1005,63 @@ def export_analysis(df):
 {df.describe().to_string()}
 
 СГЕНЕРИРОВАНО: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')}
-    """
+        """
 
-    st.text_area("Полный отчет анализа", report, height=400)
+        st.text_area("Полный текстовый отчет", report, height=300)
 
-    st.write("**Загрузка результатов:**")
-    col1, col2, col3 = st.columns(3)
+        st.write("**Загрузка результатов:**")
+        col1, col2, col3, col4 = st.columns(4)
 
-    with col1:
-        if st.button("Статистический отчет", use_container_width=True):
-            desc_stats = df.describe()
-            csv = desc_stats.to_csv()
-            st.download_button(
-                label="Скачать CSV",
-                data=csv,
-                file_name="statistical_report.csv",
-                mime="text/csv",
-                use_container_width=True
-            )
+        with col1:
+            if st.button("Статистический отчет", use_container_width=True):
+                desc_stats = df.describe()
+                csv = desc_stats.to_csv()
+                st.download_button(
+                    label="Скачать CSV",
+                    data=csv,
+                    file_name="statistical_report.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
 
-    with col2:
-        if st.button("Метаданные", use_container_width=True):
-            info_data = pd.DataFrame({
-                'Переменная': df.columns,
-                'Тип данных': df.dtypes,
-                'Уникальные значения': df.nunique(),
-                'Пропуски': df.isnull().sum()
-            })
-            csv = info_data.to_csv(index=False)
-            st.download_button(
-                label="Скачать CSV",
-                data=csv,
-                file_name="metadata.csv",
-                mime="text/csv",
-                use_container_width=True
-            )
+        with col2:
+            if st.button("Метаданные", use_container_width=True):
+                info_data = pd.DataFrame({
+                    'Переменная': df.columns,
+                    'Тип данных': df.dtypes,
+                    'Уникальные значения': df.nunique(),
+                    'Пропуски': df.isnull().sum(),
+                    'Доля пропусков %': (df.isnull().sum() / len(df) * 100).round(2)
+                })
+                csv = info_data.to_csv(index=False)
+                st.download_button(
+                    label="Скачать CSV",
+                    data=csv,
+                    file_name="metadata.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
 
-    with col3:
-        if st.button("Полный отчет", use_container_width=True):
-            st.download_button(
-                label="Скачать TXT",
-                data=report,
-                file_name="data_analysis_report.txt",
-                mime="text/plain",
-                use_container_width=True
-            )
+        with col3:
+            if st.button("Полный отчет", use_container_width=True):
+                st.download_button(
+                    label="Скачать TXT",
+                    data=report,
+                    file_name="data_analysis_report.txt",
+                    mime="text/plain",
+                    use_container_width=True
+                )
 
+        with col4:
+            if st.button("Исходные данные", use_container_width=True):
+                csv = df.to_csv(index=False)
+                st.download_button(
+                    label="Скачать данные",
+                    data=csv,
+                    file_name="original_data.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
 
 
 st.markdown("---")
@@ -861,7 +1070,6 @@ uploaded_file = st.file_uploader(
     type=['csv', 'xlsx', 'xls'],
     help="Поддерживаются файлы формата CSV, Excel (XLSX) и старые файлы Excel (XLS)"
 )
-
 
 if uploaded_file is not None:
     try:
@@ -877,7 +1085,6 @@ if uploaded_file is not None:
 
         st.markdown('<div class="section-header">Предварительный просмотр данных</div>', unsafe_allow_html=True)
         st.dataframe(df.head(10), use_container_width=True)
-
 
         basic_data_info(df)
         enhanced_numeric_analysis(df)
